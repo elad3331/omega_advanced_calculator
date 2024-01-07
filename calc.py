@@ -7,13 +7,15 @@ def power(num1: float, num2: float) -> float:
     """
     if num1 == 0 and num2 == 0:
         raise "0^0 is undefined"
-    return num1 ** num2
+    elif num2 < 0 and -1 < num1 < 1 and num1 != 0:
+        raise "negative numbers cannot have square root"
+    return num2 ** num1
 
 
 def division(num1, num2):
-    if num2 == 0:
+    if num1 == 0:
         raise "division by 0 is undefined"
-    return num1 / num2
+    return num2 / num1
 
 
 def multiply(num1, num2):
@@ -25,7 +27,7 @@ def addition(num1, num2):
 
 
 def subtraction(num1, num2):
-    return num1 - num2
+    return num2 - num1
 
 
 def minimum(num1, num2):
@@ -58,9 +60,13 @@ def factorial(num: int) -> int:
     :param num: int because only integer numbers have factorial
     :return: the factorial of this number
     """
-    result: int = 0
-    if not num.is_integer():
+    result: int = 1
+    print("stack here")
+    if num < 0:
+        raise "factorial only for non negative numbers"
+    if num * 10 % 10 != 0:
         raise "factorial only for integer numbers"
+    num = int(num)
     for i in range(1, num + 1):
         result *= i
     return result
@@ -106,8 +112,31 @@ OPERATORS = {"+": (addition, 1, 2),
 
 OPERANDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")", "!"]
 
+PRE_OPERATOR_OPERANDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "("]
+
 
 def operator_priority(operator1: str, operator2: str) -> bool:
     if OPERATORS[operator1][1] >= OPERATORS[operator2][1]:
         return True
     return False
+
+
+def check_negativity(equation_list: list, index: int) -> tuple:
+    sign = -1
+    index += 1
+    try:
+        char = equation_list[index]
+    except:
+        raise ValueError("equation cannot end with ~")
+    while char == "-":
+        sign *= -1
+        index += 1
+        if index < len(equation_list):
+            char = equation_list[index]
+        else:
+            raise ValueError("equation cannot end with -")
+    if char in PRE_OPERATOR_OPERANDS:
+        make_sign = True
+    else:
+        raise ValueError("after ~ must come - or operand")
+    return sign, index, make_sign, char
