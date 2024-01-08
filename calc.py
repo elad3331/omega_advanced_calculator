@@ -116,27 +116,26 @@ PRE_OPERATOR_OPERANDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "("]
 
 
 def operator_priority(operator1: str, operator2: str) -> bool:
-    if OPERATORS[operator1][1] >= OPERATORS[operator2][1]:
+    if OPERATORS[operator1][1] <= OPERATORS[operator2][1]:
         return True
     return False
 
 
 def check_negativity(equation_list: list, index: int) -> tuple:
-    sign = -1
+    counter = 1
     index += 1
     try:
         char = equation_list[index]
     except:
         raise ValueError("equation cannot end with ~")
     while char == "-":
-        sign *= -1
+        counter += 1
         index += 1
         if index < len(equation_list):
             char = equation_list[index]
         else:
             raise ValueError("equation cannot end with -")
-    if char in PRE_OPERATOR_OPERANDS:
-        make_sign = True
-    else:
+    if char not in PRE_OPERATOR_OPERANDS:
         raise ValueError("after ~ must come - or operand")
-    return sign, index, make_sign, char
+    index -= 1
+    return counter, index

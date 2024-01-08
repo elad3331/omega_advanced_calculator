@@ -1,6 +1,6 @@
 from advanced_calc.calc import OPERATORS
 from advanced_calc.calc import OPERANDS
-from advanced_calc.calc import PRE_OPERATOR_OPERANDS
+from advanced_calc.calc import operator_priority
 from advanced_calc.calc import check_negativity
 
 
@@ -27,15 +27,12 @@ def calc_postfix(equation: list) -> float:
 def convert_infix_to_postfix(equation: str):
     # assuming all spaces are typed by mistake, so I remove them
     equation = equation.replace(" ", "")
-    print(equation)
     last_char = ""
     stack = []
     return_list = []
     equation_list = list(equation)
     i = 0
-    # in order to check if number is positive or negative
-    sign = 1
-    make_sign = False
+    counter = 1
     while i < len(equation_list):
         tmp_str = ""
         char = equation_list[i]
@@ -55,60 +52,47 @@ def convert_infix_to_postfix(equation: str):
                     num = float(tmp_str)
                 except:
                     raise ValueError("number isn't valid")
-                if make_sign:
-                    return_list.append(num * sign)
-                else:
-                    return_list.append(num)
-                make_sign = False
+                return_list.append(num)
                 # dummy digital numbers
                 last_char = "1"
             else:
                 raise ValueError("number must follow preoperands' operators or binary operators")
-
         elif char == "(":
             if last_char in OPERANDS:
                 raise ValueError("oeperator must be before (")
             last_char = "("
             stack.append("(")
             i += 1
-
         elif char == ")":
             last_char = ")"
-
             try:
                 while stack[-1] != "(":
                     return_list.append(stack.pop())
             except:
                 raise ValueError(") cannot appear before matching (")
-
             stack.pop()
-            if sign == -1:
-                return_list.append("~")
-                sign = 1
             i += 1
-
         elif char in OPERATORS.keys():
             operator_position = OPERATORS[char][2]
             # for pre operands' operators
-
             if operator_position == 1:
                 if last_char != "" and last_char not in OPERATORS.keys() and last_char != "(":
                     raise ValueError(char, " must be after operator or first in equation")
                 else:
                     if char == "~":
-                        sign, i, make_sign, asf = check_negativity(equation_list, i)
-                        i -= 1
+                        counter, i = check_negativity(equation_list, i)
             # for non preoperands' operators
             else:
                 if last_char not in OPERANDS:
                     raise ValueError(char, " must be after operand")
-
-            while len(stack) != 0 and stack[-1] != "(" and OPERATORS[char][1] <= OPERATORS[stack[-1]][1]:
+            while len(stack) != 0 and stack[-1] != "(" and operator_priority(char, stack[-1]):
                 return_list.append(stack.pop())
-            stack.append(char)
+            while counter > 0:
+                stack.append(char)
+                counter -= 1
+            counter = 1
             i += 1
             last_char = char
-
         else:
             raise ValueError("invalid character in equation")
     if last_char not in OPERANDS:
@@ -121,4 +105,4 @@ def convert_infix_to_postfix(equation: str):
     return return_list
 
 
-print(calc_postfix(convert_infix_to_postfix("54/3+4")))
+print(calc_postfix(convert_infix_to_postfix("~--(~-(54/3+4))+~3!")))
