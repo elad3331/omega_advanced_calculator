@@ -90,6 +90,17 @@ def negativity(num1) -> float:
     return -num1
 
 
+def digits_sum(num1: float) -> int:
+    if num1 < 0:
+        raise ValueError("# works only for positive numbers")
+    sum_of_num = 0
+    num1 = str(num1)
+    for char in num1:
+        if char.isdigit():
+            sum_of_num += int(char)
+    return sum_of_num
+
+
 # dict of operators and their functions
 """
 1 value: function
@@ -108,9 +119,10 @@ OPERATORS = {"+": (addition, 1, 2),
              "&": (minimum, 5, 2),
              "%": (modulo, 4, 2),
              "@": (average, 5, 2),
-             '~': (negativity, 6, 1)}
+             '~': (negativity, 6, 1),
+             '#': (digits_sum, 6, 3)}
 
-OPERANDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")", "!"]
+OPERANDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")", "!", "#"]
 
 PRE_OPERATOR_OPERANDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "("]
 
@@ -139,3 +151,11 @@ def check_negativity(equation_list: list, index: int) -> tuple:
         raise ValueError("after ~ must come - or operand")
     index -= 1
     return counter, index
+
+
+def check_minuses(equation_list: list, index: int):
+    counter = 1
+    if equation_list[index - 1] in OPERATORS:
+        equation_list[index] = "~"
+    elif equation_list[index-1] in OPERANDS:
+        

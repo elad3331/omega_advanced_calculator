@@ -1,7 +1,8 @@
-from advanced_calc.calc import OPERATORS
-from advanced_calc.calc import OPERANDS
-from advanced_calc.calc import operator_priority
-from advanced_calc.calc import check_negativity
+from calc import OPERATORS
+from calc import OPERANDS
+from calc import operator_priority
+from calc import check_negativity
+from calc import check_minuses
 
 
 def calc_postfix(equation: list) -> float:
@@ -10,7 +11,6 @@ def calc_postfix(equation: list) -> float:
         element = equation[i]
         if type(element) is float:
             stack.append(element)
-
         elif element in OPERATORS.keys():
             operator = element
             num1 = stack.pop()
@@ -20,7 +20,6 @@ def calc_postfix(equation: list) -> float:
             else:
                 num2 = stack.pop()
                 stack.append(OPERATORS[operator][0](num1, num2))
-
     return stack.pop()
 
 
@@ -83,8 +82,12 @@ def convert_infix_to_postfix(equation: str):
                         counter, i = check_negativity(equation_list, i)
             # for non preoperands' operators
             else:
+                # can be binary or unary minus
+                if char == "-":
+                    check_minuses(equation_list, i)
                 if last_char not in OPERANDS:
                     raise ValueError(char, " must be after operand")
+
             while len(stack) != 0 and stack[-1] != "(" and operator_priority(char, stack[-1]):
                 return_list.append(stack.pop())
             while counter > 0:
@@ -103,6 +106,3 @@ def convert_infix_to_postfix(equation: str):
         return_list.append(stack.pop())
     print(return_list)
     return return_list
-
-
-print(calc_postfix(convert_infix_to_postfix("~--(~-(54/3+4))+~3!")))
