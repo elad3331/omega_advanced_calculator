@@ -18,6 +18,8 @@ def calc_postfix(equation: list) -> float:
             if OPERATORS[operator][2] != 2:
                 stack.append(OPERATORS[operator][0](num1))
             else:
+                if len(stack) == 0 and operator == '-':
+                    stack.append(OPERATORS[operator][0](num1, 0))
                 num2 = stack.pop()
                 stack.append(OPERATORS[operator][0](num1, num2))
     return stack.pop()
@@ -84,11 +86,13 @@ def convert_infix_to_postfix(equation: str):
             else:
                 # can be binary or unary minus
                 if char == "-":
-                    check_minuses(equation_list, i)
-                if last_char not in OPERANDS:
+                    counter, i, equation_list = check_minuses(equation_list, i)
+                    char = equation_list[i-counter+1]
+                    print("equation ", equation_list[i])
+                elif last_char not in OPERANDS:
                     raise ValueError(char, " must be after operand")
-
             while len(stack) != 0 and stack[-1] != "(" and operator_priority(char, stack[-1]):
+                print("appends it ", stack[-1], i)
                 return_list.append(stack.pop())
             while counter > 0:
                 stack.append(char)

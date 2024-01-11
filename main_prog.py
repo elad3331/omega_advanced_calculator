@@ -8,7 +8,7 @@ def main():
         try:
             result = convert_infix_to_postfix(equation)
             print("the result of the equation is", calc_postfix(result))
-        except (ValueError,EOFError) as e:
+        except (ValueError, EOFError) as e:
             print(e)
         equation = input("please enter an equation, exit program\n")
 

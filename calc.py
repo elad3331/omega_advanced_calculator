@@ -154,8 +154,29 @@ def check_negativity(equation_list: list, index: int) -> tuple:
 
 
 def check_minuses(equation_list: list, index: int):
-    counter = 1
+    # if the minus is the first char in equation or first char after (
     if equation_list[index - 1] in OPERATORS:
         equation_list[index] = "~"
-    elif equation_list[index-1] in OPERANDS:
-        
+        counter, index = check_negativity(equation_list, index)
+        return counter, index, equation_list
+    elif equation_list[index - 1] in OPERANDS:
+        try:
+            char = equation_list[index + 1]
+        except:
+            raise ValueError("equation cannot end with -")
+        if char == '-':
+            equation_list[index + 1] = '~'
+    return 1, index, equation_list
+
+
+"""
+3-4
+3+0-4
+--3!
+0-(0-(3!))
+
+-4+3
+0-(4)+3
+04-3+
+
+"""
