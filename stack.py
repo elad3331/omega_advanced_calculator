@@ -20,8 +20,9 @@ def calc_postfix(equation: list) -> float:
             else:
                 if len(stack) == 0 and operator == '-':
                     stack.append(OPERATORS[operator][0](num1, 0))
-                num2 = stack.pop()
-                stack.append(OPERATORS[operator][0](num1, num2))
+                else:
+                    num2 = stack.pop()
+                    stack.append(OPERATORS[operator][0](num1, num2))
     return stack.pop()
 
 
@@ -65,6 +66,8 @@ def convert_infix_to_postfix(equation: str):
             stack.append("(")
             i += 1
         elif char == ")":
+            if last_char == "(":
+                raise ValueError(") cannot appear right after (")
             last_char = ")"
             try:
                 while stack[-1] != "(":

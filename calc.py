@@ -1,3 +1,6 @@
+from math import pow
+
+
 def power(num1: float, num2: float) -> float:
     """
 
@@ -9,16 +12,28 @@ def power(num1: float, num2: float) -> float:
         raise "0^0 is undefined"
     elif num2 < 0 and -1 < num1 < 1 and num1 != 0:
         raise "negative numbers cannot have square root"
-    return num2 ** num1
+    return pow(num2, num1)
 
 
 def division(num1, num2):
+    """
+
+    :param num1:
+    :param num2:
+    :return:
+    """
     if num1 == 0:
         raise "division by 0 is undefined"
     return num2 / num1
 
 
 def multiply(num1, num2):
+    """
+
+    :param num1:
+    :param num2:
+    :return:
+    """
     return num1 * num2
 
 
@@ -155,6 +170,12 @@ def check_negativity(equation_list: list, index: int) -> tuple:
 
 def check_minuses(equation_list: list, index: int):
     # if the minus is the first char in equation or first char after (
+    counter = 0
+    if index == 0 or equation_list[index - 1] == "(":
+        while equation_list[index] == "-":
+            counter += 1
+            index += 1
+        return counter, index-1, equation_list
     if equation_list[index - 1] in OPERATORS:
         equation_list[index] = "~"
         counter, index = check_negativity(equation_list, index)
