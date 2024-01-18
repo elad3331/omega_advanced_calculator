@@ -1,56 +1,74 @@
 from math import pow
+from calculator_exception import CalculationError
 
 
 def power(num1: float, num2: float) -> float:
     """
-
+    function that calcs power of numbers
     :param num1:
     :param num2:
     :return:
     """
     if num1 == 0 and num2 == 0:
-        raise "0^0 is undefined"
+        raise CalculationError("0^0 is undefined")
     elif num2 < 0 and -1 < num1 < 1 and num1 != 0:
-        raise "negative numbers cannot have square root"
-    return pow(num2, num1)
+        raise CalculationError("negative numbers cannot have square root")
+    try:
+        result = pow(num2, num1)
+    except OverflowError:
+        raise CalculationError("number too big - result is inf")
+    return result
 
 
 def division(num1, num2):
     """
-
-    :param num1:
-    :param num2:
-    :return:
+    function that calcs division of two numbers
+    :param num1: denominator
+    :param num2: numerator
+    :return: denominator/numerator
+    :raise
     """
     if num1 == 0:
-        raise "division by 0 is undefined"
+        raise CalculationError("division by 0 is undefined")
     return num2 / num1
 
 
-def multiply(num1, num2):
+def multiply(num1: float, num2: float) -> float:
     """
-
-    :param num1:
-    :param num2:
-    :return:
+    calcs multiplication
+    :param num1: first number
+    :param num2: second number
+    :return: the result of num1*num2
     """
     return num1 * num2
 
 
-def addition(num1, num2):
+def addition(num1: float, num2: float) -> float:
+    """
+    calcs addition
+    :param num1: first number
+    :param num2: second number
+    :return: the result of num1+num2
+    """
     return num1 + num2
 
 
-def subtraction(num1, num2):
+def subtraction(num1: float, num2: float) -> float:
+    """
+    calcs subtraction
+    :param num1: first number
+    :param num2: second number
+    :return: the result of num2-num1
+    """
     return num2 - num1
 
 
-def minimum(num1, num2):
+def minimum(num1: float, num2: float) -> float:
     """
     checks minimum of two numbers
     :param num1: first num to check
     :param num2: second num to check
-    :return: the bigger num
+    :return: the smaller num
     """
     if num1 < num2:
         return num1
@@ -74,20 +92,20 @@ def factorial(num: int) -> int:
     calculates factorial of given number
     :param num: int because only integer numbers have factorial
     :return: the factorial of this number
+    :raises
     """
     result: int = 1
-    print("stack here")
     if num < 0:
-        raise "factorial only for non negative numbers"
+        raise CalculationError("factorial only for non negative numbers")
     if num * 10 % 10 != 0:
-        raise "factorial only for integer numbers"
+        raise CalculationError("factorial only for integer numbers")
     num = int(num)
     for i in range(1, num + 1):
         result *= i
     return result
 
 
-def average(num1, num2) -> float:
+def average(num1: float, num2: float) -> float:
     """
     calculates the average of two given numbers
     :param num1: first num
@@ -97,17 +115,28 @@ def average(num1, num2) -> float:
     return (num1 + num2) / 2
 
 
-def modulo(num1, num2) -> float:
-    return num1 % num2
+def modulo(num1: float, num2: float) -> float:
+    """
+
+    :param num1:
+    :param num2:
+    :return:
+    """
+    return num2 % num1
 
 
-def negativity(num1) -> float:
+def negativity(num1: float) -> float:
+    """
+    calcs negativity of given number
+    :param num1: the number to calc
+    :return: -num1
+    """
     return -num1
 
 
 def digits_sum(num1: float) -> int:
     if num1 < 0:
-        raise ValueError("# works only for positive numbers")
+        raise CalculationError("# works only for positive numbers")
     sum_of_num = 0
     num1 = str(num1)
     for char in num1:
@@ -141,19 +170,33 @@ OPERANDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")", "!", "#"]
 
 PRE_OPERATOR_OPERANDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "("]
 
-
+OPEN_PARENTHESES = "("
+CLOSER_PARENTHESES = ")"
 def operator_priority(operator1: str, operator2: str) -> bool:
+    """
+    function that returns true if first's operator priority is greater than
+    second's operator priority. Else returns false
+    :param operator1: current operator in equation
+    :param operator2: operator that is in the top of the stack
+    :return: true or false
+    """
     if OPERATORS[operator1][1] <= OPERATORS[operator2][1]:
         return True
     return False
 
 
 def check_negativity(equation_list: list, index: int) -> tuple:
+    """
+    function that being called when there is ~ in equation
+    :param equation_list:
+    :param index:
+    :return:
+    """
     counter = 1
     index += 1
     try:
         char = equation_list[index]
-    except:
+    except IndexError:
         raise ValueError("equation cannot end with ~")
     while char == "-":
         counter += 1
@@ -169,35 +212,29 @@ def check_negativity(equation_list: list, index: int) -> tuple:
 
 
 def check_minuses(equation_list: list, index: int):
+    """
+    function that being called when there is minus in equation
+    :param equation_list: the list of the equation; passed by reference
+    :param index: the current index in list
+    :return:
+    """
     # if the minus is the first char in equation or first char after (
     counter = 0
     if index == 0 or equation_list[index - 1] == "(":
         while equation_list[index] == "-":
             counter += 1
             index += 1
-        return counter, index-1, equation_list
-    if equation_list[index - 1] in OPERATORS:
+        return counter, index - 1
+    elif equation_list[index - 1] in OPERATORS:
         equation_list[index] = "~"
         counter, index = check_negativity(equation_list, index)
-        return counter, index, equation_list
-    elif equation_list[index - 1] in OPERANDS:
+        return counter, index
+    # if last char is operand
+    else:
         try:
             char = equation_list[index + 1]
-        except:
+        except IndexError:
             raise ValueError("equation cannot end with -")
         if char == '-':
             equation_list[index + 1] = '~'
-    return 1, index, equation_list
-
-
-"""
-3-4
-3+0-4
---3!
-0-(0-(3!))
-
--4+3
-0-(4)+3
-04-3+
-
-"""
+    return 1, index
