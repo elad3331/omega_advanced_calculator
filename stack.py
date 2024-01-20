@@ -6,6 +6,7 @@ from calc import check_minuses
 from calc import OPEN_PARENTHESES
 from calc import CLOSER_PARENTHESES
 
+
 def calc_postfix(equation: list) -> float:
     """
     function that gets valid postfix equation in list and calcs it
@@ -24,11 +25,8 @@ def calc_postfix(equation: list) -> float:
             if OPERATORS[operator][2] != 2:
                 stack.append(round(OPERATORS[operator][0](num1), 10))
             else:
-                if len(stack) == 0 and operator == '-':
-                    stack.append(round(OPERATORS[operator][0](num1, 0), 10))
-                else:
-                    num2 = stack.pop()
-                    stack.append(round(OPERATORS[operator][0](num1, num2), 10))
+                num2 = stack.pop()
+                stack.append(round(OPERATORS[operator][0](num1, num2), 10))
     return stack.pop()
 
 
@@ -37,6 +35,7 @@ def convert_infix_to_postfix(equation: str) -> list:
     function that gets infix equation in string. converts it to postfix
     :param equation: the string that represents the equation
     :return: valid postfix equation (if possible)
+    :raises: ValueError if the equation syntax is invalid
     """
     # assuming all spaces are typed by mistake, so I remove them
     equation = equation.replace(" ", "")
@@ -85,7 +84,7 @@ def convert_infix_to_postfix(equation: str) -> list:
                 raise ValueError(") cannot appear before matching (")
             stack.pop()
             i += 1
-        elif char in OPERATORS.keys():
+        elif char in OPERATORS.keys() and char != "_":
             operator_position = OPERATORS[char][2]
             # for pre operands' operators
             if operator_position == 1:
@@ -102,7 +101,8 @@ def convert_infix_to_postfix(equation: str) -> list:
                     char = equation_list[i - counter + 1]
                 elif last_char not in OPERANDS:
                     raise ValueError(char + " must be after operand")
-            while len(stack) != 0 and stack[-1] != OPEN_PARENTHESES and operator_priority(char, stack[-1]):
+            while len(stack) != 0 and stack[-1] != OPEN_PARENTHESES and operator_priority(char, stack[-1]) and (
+                    stack[-1] != '_' != char):
                 return_list.append(stack.pop())
             while counter > 0:
                 stack.append(char)
@@ -113,7 +113,7 @@ def convert_infix_to_postfix(equation: str) -> list:
         else:
             raise ValueError("invalid character in equation")
     if last_char not in OPERANDS:
-        raise ValueError("last char in equation should be operand")
+        raise ValueError("equation must end with operand or post operand operator")
     while len(stack) != 0:
         if stack[-1] == OPEN_PARENTHESES:
             raise ValueError("number of ( and ) doesnt match")
