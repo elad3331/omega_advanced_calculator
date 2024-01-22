@@ -49,7 +49,7 @@ def convert_infix_to_postfix(equation: str) -> list:
     while i < len(equation_list):
         tmp_str = ""
         char = equation_list[i]
-        if char.isdigit():
+        if char.isdigit() or char == ".":
             if (last_char in OPERATORS.keys() and last_char not in OPERANDS) or last_char == "" or last_char == "(":
                 while char.isdigit() or char == ".":
                     tmp_str += char
@@ -60,7 +60,7 @@ def convert_infix_to_postfix(equation: str) -> list:
                         break
                 try:
                     num = float(tmp_str)
-                except SyntaxError:
+                except (SyntaxError, ValueError):
                     raise ValueError("number isn't valid")
                 return_list.append(num)
                 # dummy digital numbers
