@@ -14,7 +14,6 @@ def start_calculator():
         valid_equation = False
         try:
             result = convert_infix_to_postfix(equation)
-            print(result)
             valid_equation = True
         except ValueError as e:
             print(e)
