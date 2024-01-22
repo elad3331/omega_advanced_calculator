@@ -13,7 +13,9 @@ def power(num1: float, num2: float) -> float:
     """
     if num1 == 0 and num2 == 0:
         raise CalculationError("0^0 is undefined")
-    elif num2 < 0 and -1 < num1 < 1 and num1 != 0:
+    elif num1 == 0:
+        return 1
+    elif num2 < 0 and (num1 * 10 % 10 != 0) and num1 != 0:
         raise CalculationError("negative numbers cannot have root")
     elif num2 == 0 and num1 < 0:
         raise CalculationError("zero in denominator is invalid")
@@ -155,6 +157,8 @@ def digits_sum(num1: float) -> int:
     for char in num1:
         if char.isdigit():
             sum_of_num += int(char)
+        elif char == "e":
+            break
     return sum_of_num
 
 
